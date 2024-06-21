@@ -1,0 +1,101 @@
+Q1
+SELECT c.CustomerID, 
+       (SELECT TOP 1 o.OrderID FROM Orders o WHERE o.CustomerID = c.CustomerID) AS OrderID,
+       (SELECT TOP 1 o.OrderDate FROM Orders o WHERE o.CustomerID = c.CustomerID) AS OrderDate
+FROM Customers c;
+***
+
+Q2
+SELECT CustomerID, NULL AS OrderID, NULL AS OrderDate
+FROM Customers
+WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
+***
+
+Q3
+SELECT o.CustomerID, o.OrderID, o.OrderDate
+FROM Orders o
+WHERE YEAR(o.OrderDate) = 1997 AND MONTH(o.OrderDate) = 7;
+***
+
+Q4
+SELECT o.CustomerID, COUNT(o.OrderID) AS totalorders
+FROM Orders o
+GROUP BY o.CustomerID;
+***
+
+Q5
+SELECT e1.EmployeeID, e1.FirstName, e1.LastName
+FROM Employees e1
+CROSS JOIN (SELECT TOP 5 ROW_NUMBER() OVER (ORDER BY EmployeeID) AS rn FROM Employees) AS e2
+WHERE e1.EmployeeID = e2.rn;
+***
+
+Q6
+SELECT ProductName
+FROM Products
+WHERE UnitPrice > (SELECT AVG(UnitPrice) FROM Products);
+***
+
+Q7
+SELECT MAX(UnitPrice) AS SecondHighestPrice
+FROM Products
+WHERE UnitPrice < (SELECT MAX(UnitPrice) FROM Products);
+***
+
+Q8
+SELECT e.EmployeeID, DATEADD(day, n.number, '1996-07-04') AS Date
+FROM Employees e
+JOIN (
+    SELECT number
+    FROM master..spt_values
+    WHERE type = 'P' AND number >= 0 AND number <= DATEDIFF(day, '1996-07-04', '1997-08-04')
+) AS n ON 1=1;
+***
+
+Q9
+SELECT c.CustomerID, 
+       COUNT(o.OrderID) AS TotalOrders, 
+       SUM(od.Quantity) AS TotalQuantity
+FROM Customers c
+LEFT JOIN Orders o ON c.CustomerID = o.CustomerID
+LEFT JOIN OrderDetails od ON o.OrderID = od.OrderID
+WHERE c.Country = 'USA'
+GROUP BY c.CustomerID;
+***
+
+Q10
+SELECT c.CustomerID, c.CompanyName, o.OrderID, o.OrderDate
+FROM Customers c
+JOIN Orders o ON c.CustomerID = o.CustomerID
+WHERE o.OrderDate = '1997-07-04';
+***
+
+Q11
+SELECT e1.EmployeeID, e1.FirstName + ' ' + e1.LastName AS EmployeeName, 
+       DATEDIFF(year, e1.BirthDate, GETDATE()) AS Age, 
+       DATEDIFF(year, e2.BirthDate, GETDATE()) AS ManagerAge
+FROM Employees e1
+JOIN Employees e2 ON e1.ReportsTo = e2.EmployeeID
+WHERE DATEDIFF(year, e1.BirthDate, GETDATE()) > DATEDIFF(year, e2.BirthDate, GETDATE());
+***
+
+Q12
+SELECT p.ProductName, o.OrderDate
+FROM Products p
+JOIN OrderDetails od ON p.ProductID = od.ProductID
+JOIN Orders o ON od.OrderID = o.OrderID
+WHERE o.OrderDate = '1997-08-08';
+***
+
+Q13
+SELECT o.ShipAddress AS Address, o.ShipCity AS City, o.ShipCountry AS Country
+FROM Orders o
+WHERE o.EmployeeID = (SELECT EmployeeID FROM Employees WHERE FirstName = 'Anne')
+AND o.ShippedDate > o.RequiredDate;
+***
+
+Q14
+SELECT DISTINCT ShipCountry AS Country
+FROM Orders
+WHERE ShipRegion = 'Beverages';
+*** 

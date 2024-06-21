@@ -1,0 +1,16 @@
+Q1
+SELECT  Duplicate(ContactTitle,Region,Country)
+From Customer
+***
+
+
+Q2
+SELECT OrderID, (UnitPrice*Quantity) AS Saleprice
+FROM [Order Details]
+where (UnitPrice*Quantity)>1000
+ORDER BY OrderID
+***
+Q3
+Select Products
+From Orders
+***
